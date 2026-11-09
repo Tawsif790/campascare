@@ -7,73 +7,106 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="top">
-    <h1>CampusCare</h1>
-    <p>Report a problem on campus. Track it until it's fixed.</p>
-  </header>
-
-  <main>
-    <section class="panel" aria-labelledby="form-title">
-      <h2 id="form-title">Report an issue</h2>
-      <form id="issue-form">
-        <label>Your name
-          <input id="name" required maxlength="40" placeholder="e.g. Rahim">
-        </label>
-        <label>Issue title
-          <input id="title" required maxlength="80" placeholder="e.g. Broken fan in Room 304">
-        </label>
-        <div class="row">
-          <label>Category
-            <select id="category">
-              <option>Facilities</option>
-              <option>IT / Wi-Fi</option>
-              <option>Safety</option>
-              <option>Health</option>
-              <option>Other</option>
-            </select>
-          </label>
-          <label>Priority
-            <select id="priority">
-              <option>Low</option>
-              <option selected>Medium</option>
-              <option>High</option>
-            </select>
-          </label>
-        </div>
-        <label>Location
-          <input id="location" required maxlength="60" placeholder="e.g. Block B, 3rd floor">
-        </label>
-        <label>Details
-          <textarea id="description" rows="3" maxlength="300" placeholder="What is wrong?"></textarea>
-        </label>
-        <button type="submit" class="primary">Submit report</button>
-      </form>
-    </section>
-
-    <section class="panel" aria-labelledby="list-title">
-      <h2 id="list-title">All reports</h2>
-
-      <div class="stats" id="stats"></div>
-
-      <div class="tools">
-        <input id="search" type="search" placeholder="Search reports" aria-label="Search reports">
-        <select id="filter" aria-label="Filter by status">
-          <option value="All">All statuses</option>
-          <option>Pending</option>
-          <option>In progress</option>
-          <option>Resolved</option>
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="login-container">
+    <div class="panel login-panel">
+      <h2 style="text-align: center; color: var(--green);">CampusCare Login</h2>
+      <p style="text-align: center; color: var(--muted); font-size: 0.9rem; margin-bottom: 20px;">Select your role to continue</p>
+      
+      <label>Username
+        <input type="text" id="login-user" placeholder="Enter your name (e.g. Rahim)">
+      </label>
+      
+      <label>Role
+        <select id="login-role">
+          <option value="student">Student</option>
+          <option value="teacher">Teacher / Admin</option>
         </select>
-      </div>
+      </label>
+      
+      <button type="button" class="primary" id="btn-login">Login</button>
+      <p id="login-error" style="color: var(--red); font-size: 0.85rem; text-align: center; display: none;">Please enter a username.</p>
+    </div>
+  </div>
 
-      <ul id="list" class="list"></ul>
-      <p id="empty" class="empty" hidden>No reports yet. Fill in the form to add the first one.</p>
-
-      <div class="footer-actions">
-        <button id="export" type="button">Download data (JSON)</button>
-        <button id="clear" type="button" class="danger">Delete all</button>
+  <!-- MAIN APP (Hidden by default) -->
+  <div id="app-screen" style="display: none;">
+    <header class="top">
+      <div style="display: flex; justify-content: space-between; align-items: center; max-width: 980px; margin: 0 auto; padding: 0 16px;">
+        <div>
+          <h1>CampusCare</h1>
+          <p>Report a problem on campus. Track it until it's fixed.</p>
+        </div>
+        <div style="text-align: right;">
+          <p style="margin: 0; font-size: 0.9rem;">Logged in as: <strong id="current-user-display"></strong></p>
+          <p style="margin: 0; font-size: 0.8rem; opacity: 0.8;" id="current-role-display"></p>
+          <button id="btn-logout" style="margin-top: 8px; background: transparent; color: white; border-color: white; padding: 4px 10px; font-size: 0.8rem;">Logout</button>
+        </div>
       </div>
-    </section>
-  </main>
+    </header>
+
+    <main>
+      <section class="panel" aria-labelledby="form-title">
+        <h2 id="form-title">Report an issue</h2>
+        <form id="issue-form">
+          <!-- Name field is now hidden and auto-filled from login -->
+          <input type="hidden" id="name">
+          
+          <label>Issue title
+            <input id="title" required maxlength="80" placeholder="e.g. Broken fan in Room 304">
+          </label>
+          <div class="row">
+            <label>Category
+              <select id="category">
+                <option>Facilities</option>
+                <option>IT / Wi-Fi</option>
+                <option>Safety</option>
+                <option>Health</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label>Priority
+              <select id="priority">
+                <option>Low</option>
+                <option selected>Medium</option>
+                <option>High</option>
+              </select>
+            </label>
+          </div>
+          <label>Location
+            <input id="location" required maxlength="60" placeholder="e.g. Block B, 3rd floor">
+          </label>
+          <label>Details
+            <textarea id="description" rows="3" maxlength="300" placeholder="What is wrong?"></textarea>
+          </label>
+          <button type="submit" class="primary">Submit report</button>
+        </form>
+      </section>
+
+      <section class="panel" aria-labelledby="list-title">
+        <h2 id="list-title">All reports</h2>
+        <div class="stats" id="stats"></div>
+        <div class="tools">
+          <input id="search" type="search" placeholder="Search reports" aria-label="Search reports">
+          <select id="filter" aria-label="Filter by status">
+            <option value="All">All statuses</option>
+            <option>Pending</option>
+            <option>In progress</option>
+            <option>Resolved</option>
+          </select>
+        </div>
+
+        <ul id="list" class="list"></ul>
+        <p id="empty" class="empty" hidden>No reports yet. Fill in the form to add the first one.</p>
+
+        <!-- Admin Actions (Hidden for students) -->
+        <div class="footer-actions admin-only" style="display: none;">
+          <button id="export" type="button">Download data (JSON)</button>
+          <button id="clear" type="button" class="danger">Delete all</button>
+        </div>
+      </section>
+    </main>
+  </div>
 
   <script src="app.js"></script>
 </body>
