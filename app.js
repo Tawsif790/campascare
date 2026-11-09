@@ -126,12 +126,25 @@ function showApp() {
   document.getElementById("current-role-display").textContent = currentUser.role;
   document.getElementById("name").value = currentUser.username;
 
-  // Role UI Adjustments (Changed to 'admin')
+  // Role UI Adjustments
   const adminElements = document.querySelectorAll(".admin-only");
+  const reportSection = document.getElementById("report-section");
+  const appMain = document.getElementById("app-main");
+
   if (currentUser.role === "admin") {
+    // Show Admin tools
     adminElements.forEach(el => el.style.display = "flex");
+    // Hide the report form for Admin
+    reportSection.style.display = "none";
+    // Make the reports list full width
+    appMain.style.gridTemplateColumns = "1fr"; 
   } else {
+    // Hide Admin tools for Students
     adminElements.forEach(el => el.style.display = "none");
+    // Show the report form for Students
+    reportSection.style.display = "block";
+    // Restore the split layout (form on left, list on right)
+    appMain.style.gridTemplateColumns = "380px 1fr"; 
   }
 
   render();
@@ -173,7 +186,7 @@ form.addEventListener("submit", (e) => {
 });
 
 function updateStatus(id, status) {
-  if (currentUser.role !== "admin") return; // Changed to admin
+  if (currentUser.role !== "admin") return; 
   const issue = issues.find((i) => i.id === id);
   if (issue) issue.status = status;
   saveIssues();
@@ -181,7 +194,7 @@ function updateStatus(id, status) {
 }
 
 function removeIssue(id) {
-  if (currentUser.role !== "admin") return; // Changed to admin
+  if (currentUser.role !== "admin") return; 
   if (!confirm("Delete this report?")) return;
   issues = issues.filter((i) => i.id !== id);
   saveIssues();
@@ -189,7 +202,7 @@ function removeIssue(id) {
 }
 
 document.getElementById("clear").addEventListener("click", () => {
-  if (currentUser.role !== "admin") return; // Changed to admin
+  if (currentUser.role !== "admin") return; 
   if (issues.length && confirm("Delete ALL reports? This cannot be undone.")) {
     issues = [];
     saveIssues();
@@ -198,7 +211,7 @@ document.getElementById("clear").addEventListener("click", () => {
 });
 
 document.getElementById("export").addEventListener("click", () => {
-  if (currentUser.role !== "admin") return; // Changed to admin
+  if (currentUser.role !== "admin") return; 
   const blob = new Blob([JSON.stringify(issues, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
