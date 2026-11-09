@@ -1,18 +1,98 @@
-// CampusCare - LocalStorage App with Role-Based Login
+// CampusCare - Complete Auth & App Logic
 
 const KEY = "campuscare_issues";
+const USERS_KEY = "campuscare_users";
 const SESSION_KEY = "campuscare_session";
 
-let issues = load();
+let issues = loadIssues();
 let currentUser = null;
 
-// ---------- Storage & Auth ----------
-function load() {
+// ---------- Storage Functions ----------
+function loadIssues() {
   try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; }
 }
-
-function save() {
+function saveIssues() {
   localStorage.setItem(KEY, JSON.stringify(issues));
+}
+function loadUsers() {
+  try { return JSON.parse(localStorage.getItem(USERS_KEY)) || []; } catch (e) { return []; }
+}
+function saveUsers(users) {
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
+
+// ---------- Authentication Logic ----------
+function register() {
+  const user = document.getElementById("reg-user").value.trim();
+  const pass = document.getElementById("reg-pass").value;
+  const role = document.getElementById("reg-role").value;
+  const errorEl = document.getElementById("reg-error");
+
+  if (!user || !pass) {
+    errorEl.textContent = "Please fill in all fields.";
+    errorEl.style.display = "block";
+    return;
+  }
+
+  let users = loadUsers();
+  if (users.find(u => u.username.toLowerCase() === user.toLowerCase())) {
+    errorEl.textContent = "Username already exists. Try another.";
+    errorEl.style.display = "block";
+    return;
+  }
+
+  // Save new user
+  users.push({ username: user, password: pass, role: role });
+  saveUsers(users);
+  
+  // Clear form and switch to login
+  document.getElementById("reg-user").value = "";
+  document.getElementById("reg-pass").value = "";
+  errorEl.style.display = "none";
+  
+  alert("Account created successfully! Please login.");
+  toggleAuthScreen('login');
+}
+
+function login() {
+  const user = document.getElementById("login-user").value.trim();
+  const pass = document.getElementById("login-pass").value;
+  const role = document.getElementById("login-role").value;
+  const errorEl = document.getElementById("login-error");
+
+  if (!user || !pass) {
+    errorEl.textContent = "Please enter username and password.";
+    errorEl.style.display = "block";
+    return;
+  }
+
+  const users = loadUsers();
+  const validUser = users.find(u => 
+    u.username.toLowerCase() === user.toLowerCase() && 
+    u.password === pass && 
+    u.role === role
+  );
+
+  if (!validUser) {
+    errorEl.textContent = "Invalid credentials or wrong role selected.";
+    errorEl.style.display = "block";
+    return;
+  }
+
+  // Success
+  errorEl.style.display = "none";
+  currentUser = validUser;
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
+  showApp();
+}
+
+function logout() {
+  currentUser = null;
+  sessionStorage.removeItem(SESSION_KEY);
+  document.getElementById("login-user").value = "";
+  document.getElementById("login-pass").value = "";
+  document.getElementById("app-screen").style.display = "none";
+  toggleAuthScreen('login');
 }
 
 function loadSession() {
@@ -21,59 +101,48 @@ function loadSession() {
     currentUser = JSON.parse(session);
     showApp();
   } else {
-    document.getElementById("login-screen").style.display = "flex";
-    document.getElementById("app-screen").style.display = "none";
+    toggleAuthScreen('login');
   }
 }
 
-function login() {
-  const userInp = document.getElementById("login-user").value.trim();
-  const roleInp = document.getElementById("login-role").value;
-  const error = document.getElementById("login-error");
-
-  if (!userInp) {
-    error.style.display = "block";
-    return;
-  }
-  error.style.display = "none";
-
-  currentUser = { name: userInp, role: roleInp };
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
-  showApp();
-}
-
-function logout() {
-  currentUser = null;
-  sessionStorage.removeItem(SESSION_KEY);
+function toggleAuthScreen(type) {
   document.getElementById("login-screen").style.display = "flex";
   document.getElementById("app-screen").style.display = "none";
-  document.getElementById("issue-form").reset();
-  document.getElementById("login-user").value = "";
+  
+  if (type === 'login') {
+    document.getElementById("login-form-container").style.display = "block";
+    document.getElementById("register-form-container").style.display = "none";
+  } else {
+    document.getElementById("login-form-container").style.display = "none";
+    document.getElementById("register-form-container").style.display = "block";
+  }
 }
 
 function showApp() {
   document.getElementById("login-screen").style.display = "none";
   document.getElementById("app-screen").style.display = "block";
   
-  // Set user info
-  document.getElementById("current-user-display").textContent = currentUser.name;
+  document.getElementById("current-user-display").textContent = currentUser.username;
   document.getElementById("current-role-display").textContent = `(${currentUser.role.toUpperCase()})`;
-  
-  // Auto-fill hidden name field for form submission
-  document.getElementById("name").value = currentUser.name;
+  document.getElementById("name").value = currentUser.username;
 
-  // UI Adjustments based on Role
+  // Role UI Adjustments
   const adminElements = document.querySelectorAll(".admin-only");
   if (currentUser.role === "teacher") {
-    // Teachers see all admin buttons
     adminElements.forEach(el => el.style.display = "flex");
   } else {
-    // Students don't see export/delete all buttons
     adminElements.forEach(el => el.style.display = "none");
   }
 
-  render(); // Initial render
+  render();
 }
+
+// ---------- Event Listeners (Auth) ----------
+document.getElementById("btn-login").addEventListener("click", login);
+document.getElementById("btn-register").addEventListener("click", register);
+document.getElementById("btn-logout").addEventListener("click", logout);
+document.getElementById("show-register").addEventListener("click", (e) => { e.preventDefault(); toggleAuthScreen('register'); });
+document.getElementById("show-login").addEventListener("click", (e) => { e.preventDefault(); toggleAuthScreen('login'); });
 
 // ---------- App Elements ----------
 const form = document.getElementById("issue-form");
@@ -83,12 +152,12 @@ const stats = document.getElementById("stats");
 const search = document.getElementById("search");
 const filter = document.getElementById("filter");
 
-// ---------- Actions ----------
+// ---------- App Actions ----------
 form.addEventListener("submit", (e) => {
   e.preventDefault();
   issues.unshift({
     id: Date.now(),
-    name: currentUser.name, // Gets name from logged-in user
+    name: currentUser.username,
     title: document.getElementById("title").value.trim(),
     category: document.getElementById("category").value,
     priority: document.getElementById("priority").value,
@@ -97,25 +166,25 @@ form.addEventListener("submit", (e) => {
     status: "Pending",
     date: new Date().toLocaleDateString()
   });
-  save();
+  saveIssues();
   form.reset();
-  document.getElementById("name").value = currentUser.name; // Re-fill hidden input
+  document.getElementById("name").value = currentUser.username; 
   render();
 });
 
 function updateStatus(id, status) {
-  if (currentUser.role !== "teacher") return alert("Only teachers can change statuses.");
+  if (currentUser.role !== "teacher") return; // Double check security
   const issue = issues.find((i) => i.id === id);
   if (issue) issue.status = status;
-  save();
+  saveIssues();
   render();
 }
 
 function removeIssue(id) {
-  if (currentUser.role !== "teacher") return alert("Only teachers can delete reports.");
+  if (currentUser.role !== "teacher") return;
   if (!confirm("Delete this report?")) return;
   issues = issues.filter((i) => i.id !== id);
-  save();
+  saveIssues();
   render();
 }
 
@@ -123,7 +192,7 @@ document.getElementById("clear").addEventListener("click", () => {
   if (currentUser.role !== "teacher") return;
   if (issues.length && confirm("Delete ALL reports? This cannot be undone.")) {
     issues = [];
-    save();
+    saveIssues();
     render();
   }
 });
@@ -141,11 +210,7 @@ document.getElementById("export").addEventListener("click", () => {
 search.addEventListener("input", render);
 filter.addEventListener("change", render);
 
-// Login/Logout Listeners
-document.getElementById("btn-login").addEventListener("click", login);
-document.getElementById("btn-logout").addEventListener("click", logout);
-
-// ---------- Display ----------
+// ---------- Display Functions ----------
 function el(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -178,8 +243,8 @@ function renderItem(issue) {
 
   const actions = el("div", "item-actions");
   
-  // Only show status dropdown and delete button if user is a Teacher
   if (currentUser.role === "teacher") {
+    // Teachers get dropdowns and delete buttons
     const select = el("select");
     select.setAttribute("aria-label", "Change status");
     ["Pending", "In progress", "Resolved"].forEach((s) => {
@@ -194,8 +259,9 @@ function renderItem(issue) {
 
     actions.append(select, del);
   } else {
-    // For students, just show the current status as text
-    actions.append(el("span", `status-badge ${issue.status.replace(" ", "-").toLowerCase()}`, issue.status));
+    // Students just see a static badge
+    const badgeClass = issue.status.replace(" ", "-").toLowerCase();
+    actions.append(el("span", `status-badge ${badgeClass}`, issue.status));
   }
 
   li.append(actions);
@@ -203,7 +269,7 @@ function renderItem(issue) {
 }
 
 function render() {
-  if (!currentUser) return; // Don't render if not logged in
+  if (!currentUser) return;
   
   renderStats();
   const q = search.value.trim().toLowerCase();
@@ -222,5 +288,5 @@ function render() {
     : "No reports yet. Fill in the form to add the first one.";
 }
 
-// Initialize App
+// Start App
 loadSession();
