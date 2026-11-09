@@ -4,15 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CampusCare</title>
-  <!-- Google Fonts for better typography -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <!-- LOGIN / REGISTER SCREEN -->
   <div id="login-screen" class="login-wrapper">
-    
-    <!-- Left side (Branding) -->
     <div class="login-brand">
       <div class="brand-content">
         <h1>CampusCare</h1>
@@ -20,7 +17,6 @@
       </div>
     </div>
 
-    <!-- Right side (Forms) -->
     <div class="login-form-side">
       <div class="form-container">
         
@@ -52,7 +48,7 @@
           <p class="switch-auth">Don't have an account? <a href="#" id="show-register">Create one</a></p>
         </div>
 
-        <!-- REGISTER FORM (Hidden by default) -->
+        <!-- REGISTER FORM -->
         <div id="register-form-container" style="display: none;">
           <h2>Create Account</h2>
           <p class="subtitle">Join CampusCare to start reporting.</p>
@@ -101,9 +97,11 @@
       </div>
     </header>
 
-    <main class="app-main">
-      <!-- Form Section -->
-      <section class="panel form-panel">
+    <!-- Note the id="app-main" here -->
+    <main class="app-main" id="app-main">
+      
+      <!-- Form Section (Will be hidden for Admins) -->
+      <section class="panel form-panel" id="report-section">
         <h2>Report an issue</h2>
         <form id="issue-form">
           <input type="hidden" id="name">
