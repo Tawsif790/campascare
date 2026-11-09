@@ -123,12 +123,12 @@ function showApp() {
   document.getElementById("app-screen").style.display = "block";
   
   document.getElementById("current-user-display").textContent = currentUser.username;
-  document.getElementById("current-role-display").textContent = `(${currentUser.role.toUpperCase()})`;
+  document.getElementById("current-role-display").textContent = currentUser.role;
   document.getElementById("name").value = currentUser.username;
 
-  // Role UI Adjustments
+  // Role UI Adjustments (Changed to 'admin')
   const adminElements = document.querySelectorAll(".admin-only");
-  if (currentUser.role === "teacher") {
+  if (currentUser.role === "admin") {
     adminElements.forEach(el => el.style.display = "flex");
   } else {
     adminElements.forEach(el => el.style.display = "none");
@@ -173,7 +173,7 @@ form.addEventListener("submit", (e) => {
 });
 
 function updateStatus(id, status) {
-  if (currentUser.role !== "teacher") return; // Double check security
+  if (currentUser.role !== "admin") return; // Changed to admin
   const issue = issues.find((i) => i.id === id);
   if (issue) issue.status = status;
   saveIssues();
@@ -181,7 +181,7 @@ function updateStatus(id, status) {
 }
 
 function removeIssue(id) {
-  if (currentUser.role !== "teacher") return;
+  if (currentUser.role !== "admin") return; // Changed to admin
   if (!confirm("Delete this report?")) return;
   issues = issues.filter((i) => i.id !== id);
   saveIssues();
@@ -189,7 +189,7 @@ function removeIssue(id) {
 }
 
 document.getElementById("clear").addEventListener("click", () => {
-  if (currentUser.role !== "teacher") return;
+  if (currentUser.role !== "admin") return; // Changed to admin
   if (issues.length && confirm("Delete ALL reports? This cannot be undone.")) {
     issues = [];
     saveIssues();
@@ -198,7 +198,7 @@ document.getElementById("clear").addEventListener("click", () => {
 });
 
 document.getElementById("export").addEventListener("click", () => {
-  if (currentUser.role !== "teacher") return;
+  if (currentUser.role !== "admin") return; // Changed to admin
   const blob = new Blob([JSON.stringify(issues, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
@@ -243,8 +243,8 @@ function renderItem(issue) {
 
   const actions = el("div", "item-actions");
   
-  if (currentUser.role === "teacher") {
-    // Teachers get dropdowns and delete buttons
+  if (currentUser.role === "admin") {
+    // Admins get dropdowns and delete buttons
     const select = el("select");
     select.setAttribute("aria-label", "Change status");
     ["Pending", "In progress", "Resolved"].forEach((s) => {
@@ -254,7 +254,7 @@ function renderItem(issue) {
     });
     select.addEventListener("change", () => updateStatus(issue.id, select.value));
 
-    const del = el("button", "danger", "Delete");
+    const del = el("button", "btn-danger-outline", "Delete");
     del.addEventListener("click", () => removeIssue(issue.id));
 
     actions.append(select, del);
