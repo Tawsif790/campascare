@@ -84,6 +84,45 @@ button.danger { color: var(--red); border-color: var(--red); }
   max-width: 400px; /* This stops the box from stretching full width */
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
+/* Add this to the VERY BOTTOM of your style.css */
+
+.error-msg {
+  color: var(--red);
+  font-size: 0.85rem;
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.switch-auth {
+  text-align: center;
+  font-size: 0.85rem;
+  margin-top: 15px;
+  color: var(--muted);
+}
+
+.switch-auth a {
+  color: var(--green);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.switch-auth a:hover {
+  text-decoration: underline;
+}
+
+/* Status Badge for Students */
+.status-badge {
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  background: var(--bg);
+  border: 1px solid var(--line);
+}
+.status-badge.pending { color: var(--amber); border-color: var(--amber); }
+.status-badge.in-progress { color: #2b6cb0; border-color: #2b6cb0; }
+.status-badge.resolved { color: var(--green); border-color: var(--green); }
 #btn-logout:hover {
   background: rgba(255,255,255,0.1) !important;
 }
