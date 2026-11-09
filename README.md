@@ -2,7 +2,7 @@
 
 A small web app where students report campus problems (broken facilities, Wi-Fi, safety, health) and track them until they are resolved.
 
-**SDP 2 project** · Team: _Name 1_, _Name 2_
+**SDP 2 project** ·Tawsif Ahmed (95), Tri(052), Efaj(52).
 
 ## Features
 - Submit an issue with category, priority, location and details
@@ -34,8 +34,8 @@ campuscare/
 ## Team work split
 | Member | Work |
 |---|---|
-| Name 1 | `index.html`, `style.css` (UI design, responsive layout) |
-| Name 2 | `app.js` (add / update / delete, search, filter, storage, export) |
+| Tawsif| `index.html`, `style.css` (UI design, responsive layout) |
+| Efaj | `app.js` (add / update / delete, search, filter, storage, export) |
 | Both | Testing, README, presentation |
 
 ## Limitations & future work
