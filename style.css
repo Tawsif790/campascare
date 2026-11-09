@@ -43,22 +43,6 @@ button {
   font: inherit; cursor: pointer; padding: 8px 14px; border-radius: 6px;
   border: 1px solid var(--line); background: #fff; color: var(--ink);
 }
-/* --- NEW LOGIN STYLES --- */
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-}
-.login-panel {
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-#btn-logout:hover {
-  background: rgba(255,255,255,0.1) !important;
-}
 button.primary { width: 100%; background: var(--green); color: #fff; border-color: var(--green); font-weight: 600; padding: 10px; }
 button.primary:hover { background: #0b4739; }
 button.danger { color: var(--red); border-color: var(--red); }
@@ -86,3 +70,20 @@ button.danger { color: var(--red); border-color: var(--red); }
 
 .empty { text-align: center; color: var(--muted); padding: 24px 0; }
 .footer-actions { display: flex; justify-content: space-between; margin-top: 16px; gap: 8px; flex-wrap: wrap; }
+
+/* --- NEW LOGIN STYLES --- */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+.login-panel {
+  width: 100%;
+  max-width: 400px; /* This stops the box from stretching full width */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+#btn-logout:hover {
+  background: rgba(255,255,255,0.1) !important;
+}
